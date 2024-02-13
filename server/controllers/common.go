@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"github.com/adasarpan404/roomies-be/db"
+	"github.com/adasarpan404/change/database"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var validate = validator.New()
 
-var userCollection *mongo.Collection = db.OpenCollection(db.Client, "user")
+var userCollection *mongo.Collection = database.OpenCollection(database.Client, "user")
 
-var roomCollection *mongo.Collection = db.OpenCollection(db.Client, "room")
+var roomCollection *mongo.Collection = database.OpenCollection(database.Client, "room")
