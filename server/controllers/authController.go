@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/adasarpan404/change/helpers"
@@ -115,5 +116,29 @@ func Login() gin.HandlerFunc {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		}
 		c.JSON(http.StatusOK, gin.H{"user": foundUser, "token": token})
+	}
+}
+
+func Authenticate() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		bearerToken := c.Request.Header.Get("Authorization")
+		res := strings.Split(bearerToken, " ")
+		clientToken := res[1]
+		if clientToken == "" {
+			helpers.ErrorResponse(c, http.StatusInternalServerError, "No Authentication Header Provided")
+			c.Abort()
+			return
+		}
+		claims, err := helpers.ValidateToken(clientToken)
+		if err != "" {
+			helpers.ErrorResponse(c, http.StatusInternalServerError, err)
+			c.Abort()
+			return
+		}
+		c.Set("email", claims.Email)
+		c.Set("firstName", claims.FirstName)
+		c.Set("lastName", claims.LastName)
+		c.Set("userId", claims.ID)
+		c.Next()
 	}
 }
