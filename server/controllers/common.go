@@ -10,4 +10,4 @@ var validate = validator.New()
 
 var userCollection *mongo.Collection = database.OpenCollection(database.Client, "user")
 
-var roomCollection *mongo.Collection = database.OpenCollection(database.Client, "room")
+var relationShipCollection *mongo.Collection = database.OpenCollection(database.Client, "relationShip")
