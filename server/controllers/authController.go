@@ -83,7 +83,12 @@ func Signup() gin.HandlerFunc {
 		}
 		defer cancel()
 
-		c.JSON(http.StatusCreated, gin.H{"user": userObj, "token": token})
+		c.JSON(
+			http.StatusCreated,
+			gin.H{
+				"user":  userObj,
+				"token": token,
+			})
 	}
 }
 
@@ -119,7 +124,12 @@ func Login() gin.HandlerFunc {
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		}
-		c.JSON(http.StatusOK, gin.H{"user": foundUser, "token": token})
+		c.JSON(
+			http.StatusOK,
+			gin.H{
+				"user":  foundUser,
+				"token": token,
+			})
 	}
 }
 
