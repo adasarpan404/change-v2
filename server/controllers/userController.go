@@ -40,3 +40,60 @@ func GetUser() gin.HandlerFunc {
 		c.JSON(http.StatusOK, user)
 	}
 }
+
+func Follow() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		userId, ok := c.Get("userId")
+		givenUserId := c.Param("id")
+		defer cancel()
+
+		if !ok {
+			helpers.ErrorResponse(c, http.StatusBadRequest, "User Id not found in the context")
+			return
+		}
+
+		objectUserId, err := primitive.ObjectIDFromHex(fmt.Sprint(userId))
+		defer cancel()
+
+		if err != nil {
+			helpers.ErrorResponse(c, http.StatusInternalServerError, "Invalid User ID Format")
+		}
+
+		objectGiveUserId, err := primitive.ObjectIDFromHex(givenUserId)
+		defer cancel()
+
+		if err != nil {
+			helpers.ErrorResponse(c, http.StatusBadRequest, "Invalid Room ID Format")
+			return
+		}
+
+		relationShip := model.UserRelationShipModel{
+			Follower:  objectGiveUserId,
+			Following: objectUserId,
+		}
+		relationShipObj, err := relationShipCollection.InsertOne(ctx, relationShip)
+
+		if err != nil {
+			msg := "You are not following the user"
+			helpers.ErrorResponse(c, http.StatusInternalServerError, msg)
+			return
+		}
+
+		defer cancel()
+
+		c.JSON(http.StatusCreated, gin.H{"relationship": relationShipObj})
+	}
+}
+
+func GetFollowers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+	}
+}
+
+func GetFollowing() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+	}
+}

@@ -7,4 +7,5 @@ import (
 
 func UserRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.GET("/user/me", controllers.GetUser())
+	incomingRoutes.POST("/user/follow/:id", controllers.Follow())
 }
