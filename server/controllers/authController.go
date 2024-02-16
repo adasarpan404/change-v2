@@ -15,6 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// This function is used to hash password
 func HashPassword(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
@@ -23,6 +24,7 @@ func HashPassword(password string) string {
 	return string(bytes)
 }
 
+// This function is used to verify password
 func verifyPassword(providedPassword string, userPassword string) (bool, string) {
 	err := bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(userPassword))
 	check := true
@@ -34,6 +36,7 @@ func verifyPassword(providedPassword string, userPassword string) (bool, string)
 	return check, msg
 }
 
+// This function is used to Signup
 func Signup() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.TODO(), 100*time.Second)
@@ -84,6 +87,7 @@ func Signup() gin.HandlerFunc {
 	}
 }
 
+// This function is used to login
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.TODO(), 100*time.Second)
@@ -119,6 +123,7 @@ func Login() gin.HandlerFunc {
 	}
 }
 
+// This function is used to authentice the routes
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		bearerToken := c.Request.Header.Get("Authorization")

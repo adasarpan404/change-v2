@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// This function is used to profile information
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId, ok := c.Get("userId")
@@ -41,6 +42,7 @@ func GetUser() gin.HandlerFunc {
 	}
 }
 
+// This function is used to follow
 func Follow() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
@@ -86,12 +88,14 @@ func Follow() gin.HandlerFunc {
 	}
 }
 
+// This function is used to get followers
 func GetFollowers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 	}
 }
 
+// This function is used to get following
 func GetFollowing() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
