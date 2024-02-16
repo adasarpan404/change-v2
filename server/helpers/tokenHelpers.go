@@ -34,3 +34,17 @@ func GenerateToken(email string, firstName string, lastName string, id string) (
 	}
 	return tokenString, nil
 }
+
+func ValidateToken(signedToken string) (claim *Claims, msg string) {
+	token, err := jwt.ParseWithClaims(signedToken, &Claims{}, func(t *jwt.Token) (interface{}, error) { return []byte(environment.SECRET_KEY), nil })
+	if err != nil {
+		msg = err.Error()
+		return
+	}
+	claims, ok := token.Claims.(*Claims)
+	if !ok {
+		msg = err.Error()
+		return
+	}
+	return claims, msg
+}
