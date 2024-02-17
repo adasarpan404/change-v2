@@ -34,12 +34,18 @@ func GetUser() gin.HandlerFunc {
 		var user model.User
 		projection := bson.M{"password": 0}
 		err = userCollection.FindOne(ctx, bson.M{"_id": objectUserId}, options.FindOne().SetProjection(projection)).Decode(&user)
+
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		c.JSON(http.StatusOK, user)
+		c.JSON(
+			http.StatusOK,
+			gin.H{
+				"status": true,
+				"user":   user,
+			})
 	}
 }
 

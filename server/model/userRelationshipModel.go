@@ -6,4 +6,5 @@ type UserRelationShipModel struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	Follower  primitive.ObjectID `bson:"follower"`
 	Following primitive.ObjectID `bson:"following"`
+	User      *User              `bson:"user,omitempty"`
 }

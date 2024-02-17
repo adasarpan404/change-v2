@@ -86,8 +86,9 @@ func Signup() gin.HandlerFunc {
 		c.JSON(
 			http.StatusCreated,
 			gin.H{
-				"user":  userObj,
-				"token": token,
+				"status": true,
+				"user":   userObj,
+				"token":  token,
 			})
 	}
 }
@@ -127,8 +128,9 @@ func Login() gin.HandlerFunc {
 		c.JSON(
 			http.StatusOK,
 			gin.H{
-				"user":  foundUser,
-				"token": token,
+				"status": true,
+				"user":   foundUser,
+				"token":  token,
 			})
 	}
 }
