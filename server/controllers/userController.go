@@ -18,11 +18,14 @@ import (
 // This function is used to profile information
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		userId, ok := c.Get("userId")
+
 		if !ok {
 			helpers.ErrorResponse(c, http.StatusBadRequest, "User ID not found in context")
 			return
 		}
+
 		objectUserId, err := primitive.ObjectIDFromHex(fmt.Sprint(userId))
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusBadRequest, "Invalid user ID format")
@@ -31,9 +34,17 @@ func GetUser() gin.HandlerFunc {
 
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
+
 		var user model.User
 		projection := bson.M{"password": 0}
-		err = userCollection.FindOne(ctx, bson.M{"_id": objectUserId}, options.FindOne().SetProjection(projection)).Decode(&user)
+
+		err = userCollection.FindOne(
+			ctx,
+			bson.M{
+				"_id": objectUserId,
+			},
+			options.FindOne().SetProjection(projection),
+		).Decode(&user)
 
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -52,6 +63,7 @@ func GetUser() gin.HandlerFunc {
 // This function is used to follow
 func Follow() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		userId, ok := c.Get("userId")
 		givenUserId := c.Param("id")
@@ -133,17 +145,27 @@ func GetFollowers() gin.HandlerFunc {
 
 		totalCount, err := relationShipCollection.CountDocuments(ctx, bson.M{"follower": objectUserId})
 		defer cancel()
+
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		cursor, err := relationShipCollection.Find(ctx, bson.M{"follower": objectUserId}, options.Find().SetSkip(int64(skip)).SetLimit(int64(perPage)))
+		cursor, err := relationShipCollection.Find(
+			ctx,
+			bson.M{
+				"follower": objectUserId,
+			},
+			options.Find().SetSkip(int64(skip)).SetLimit(int64(perPage)),
+		)
+
 		defer cancel()
+
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
 		}
+
 		var results []model.UserRelationShipModel
 		if err := cursor.All(ctx, &results); err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -151,9 +173,8 @@ func GetFollowers() gin.HandlerFunc {
 		}
 
 		hasPrevPage := page > 1
-
-		// Check if there is a next page
 		hasNextPage := (page-1)*perPage+len(results) < int(totalCount)
+
 		c.JSON(
 			http.StatusOK,
 			gin.H{
@@ -184,7 +205,6 @@ func GetFollowing() gin.HandlerFunc {
 		skip := (page - 1) * perPage
 
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-
 		userId, ok := c.Get("userId")
 
 		defer cancel()
@@ -210,12 +230,20 @@ func GetFollowing() gin.HandlerFunc {
 			return
 		}
 
-		cursor, err := relationShipCollection.Find(ctx, bson.M{"following": objectUserId}, options.Find().SetSkip(int64(skip)).SetLimit(int64(perPage)))
+		cursor, err := relationShipCollection.Find(
+			ctx,
+			bson.M{
+				"following": objectUserId,
+			},
+			options.Find().SetSkip(int64(skip)).SetLimit(int64(perPage)),
+		)
 		defer cancel()
+
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
 		}
+
 		var results []model.UserRelationShipModel
 		if err := cursor.All(ctx, &results); err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())

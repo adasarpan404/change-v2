@@ -52,7 +52,11 @@ func Signup() gin.HandlerFunc {
 			helpers.ErrorResponse(c, http.StatusBadRequest, validationErr.Error())
 		}
 
-		count, err := userCollection.CountDocuments(ctx, bson.M{"email": user.Email})
+		count, err := userCollection.CountDocuments(
+			ctx,
+			bson.M{
+				"email": user.Email,
+			})
 		defer cancel()
 
 		if err != nil {
@@ -70,11 +74,18 @@ func Signup() gin.HandlerFunc {
 		user.CreatedAt, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user.UpdatedAt, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user.ID = primitive.NewObjectID()
-		token, err := helpers.GenerateToken(*user.Email, *user.FirstName, *user.LastName, user.ID.Hex())
+		token, err := helpers.GenerateToken(
+			*user.Email,
+			*user.FirstName,
+			*user.LastName,
+			user.ID.Hex(),
+		)
+
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
 		}
+
 		userObj, err := userCollection.InsertOne(ctx, user)
 		if err != nil {
 			msg := "User item was not created"
@@ -96,6 +107,7 @@ func Signup() gin.HandlerFunc {
 // This function is used to login
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		var ctx, cancel = context.WithTimeout(context.TODO(), 100*time.Second)
 		var user, foundUser model.User
 
@@ -103,7 +115,10 @@ func Login() gin.HandlerFunc {
 			helpers.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		}
 
-		err := userCollection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&foundUser)
+		err := userCollection.FindOne(
+			ctx,
+			bson.M{"email": user.Email},
+		).Decode(&foundUser)
 		defer cancel()
 
 		if err != nil {
@@ -113,15 +128,23 @@ func Login() gin.HandlerFunc {
 
 		passwordIsValid, msg := verifyPassword(*foundUser.Password, *user.Password)
 		defer cancel()
+
 		if !passwordIsValid {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, msg)
 			return
 		}
+
 		if foundUser.Email == nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, "user not found")
 			return
 		}
-		token, err := helpers.GenerateToken(*foundUser.Email, *foundUser.FirstName, *foundUser.LastName, foundUser.ID.Hex())
+
+		token, err := helpers.GenerateToken(
+			*foundUser.Email,
+			*foundUser.FirstName,
+			*foundUser.LastName,
+			foundUser.ID.Hex(),
+		)
 		if err != nil {
 			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		}
