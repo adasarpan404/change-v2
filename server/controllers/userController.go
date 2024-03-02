@@ -295,9 +295,3 @@ func GetFollowing() gin.HandlerFunc {
 			})
 	}
 }
-
-func GetUserPosts() gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-	}
-}
