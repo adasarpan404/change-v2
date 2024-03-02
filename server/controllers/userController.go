@@ -294,5 +294,10 @@ func GetFollowing() gin.HandlerFunc {
 				"hasNextPage": hasNextPage,
 			})
 	}
+}
 
+func GetUserPosts() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+	}
 }
