@@ -25,3 +25,9 @@ func DeletePost() gin.HandlerFunc {
 
 	}
 }
+
+func GetHomeFeed() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+	}
+}
