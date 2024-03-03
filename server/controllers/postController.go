@@ -25,7 +25,7 @@ func CreatePost() gin.HandlerFunc {
 		}
 
 		userId, ok := c.Get("userId")
-
+		defer cancel()
 		if !ok {
 			helpers.ErrorResponse(c, http.StatusBadRequest, "User ID not found in context")
 			return
