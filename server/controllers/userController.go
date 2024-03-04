@@ -167,9 +167,24 @@ func GetFollowers() gin.HandlerFunc {
 		}
 
 		var results []model.UserRelationShipModel
-		if err := cursor.All(ctx, &results); err != nil {
-			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return
+		for cursor.Next(ctx) {
+			var userRelation model.UserRelationShipModel
+			if err := cursor.Decode(&userRelation); err != nil {
+				helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			// Fetch the related user document based on the user ID
+			var user model.User
+			err := userCollection.FindOne(ctx, bson.M{"_id": userRelation.Following}).Decode(&user)
+			if err != nil {
+				helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			// Populate the user information in the UserRelationShipModel
+			userRelation.User = &user
+			results = append(results, userRelation)
 		}
 
 		hasPrevPage := page > 1
@@ -245,9 +260,24 @@ func GetFollowing() gin.HandlerFunc {
 		}
 
 		var results []model.UserRelationShipModel
-		if err := cursor.All(ctx, &results); err != nil {
-			helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return
+		for cursor.Next(ctx) {
+			var userRelation model.UserRelationShipModel
+			if err := cursor.Decode(&userRelation); err != nil {
+				helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			// Fetch the related user document based on the user ID
+			var user model.User
+			err := userCollection.FindOne(ctx, bson.M{"_id": userRelation.Follower}).Decode(&user)
+			if err != nil {
+				helpers.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			// Populate the user information in the UserRelationShipModel
+			userRelation.User = &user
+			results = append(results, userRelation)
 		}
 
 		hasPrevPage := page > 1
@@ -264,5 +294,4 @@ func GetFollowing() gin.HandlerFunc {
 				"hasNextPage": hasNextPage,
 			})
 	}
-
 }
